@@ -32,14 +32,15 @@ inputs = {
   stage               = local.environment_vars.locals.stage
   vpc_id              = dependency.default_network.outputs.default_vpc
   subnets             = [dependency.default_network.outputs.default_subnet]
+  security_groups     = [
+    dependency.default_network.outputs.aws_default_security_group
+  ]
   engine              = "postgres"
   database_user       = "debezium"
   database_password   = get_env("DB_PASSWORD")
   database_name       = "debezium"
   deletion_protection = false
-  security_groups     = [
-    dependency.default_network.outputs.aws_default_security_group
-  ]
+
   storage_encrypted   = true
   engine_version      = "11.16"
   apply_immediately   = true
