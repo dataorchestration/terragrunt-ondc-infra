@@ -33,7 +33,7 @@ dependency "key-pair" {
 inputs = {
   namespace                   = local.environment_vars.locals.namespace
   stage                       = local.environment_vars.locals.stage
-  name                        = "${ local.environment_vars.locals.name }-ref-pre-prod"
+  name                        = "${ local.environment_vars.locals.name }-ref-tech-support"
   vpc_id                      = dependency.network.outputs.default_vpc
   ssh_key_pair                = dependency.key-pair.outputs.key_name
   subnet                      = dependency.network.outputs.default_subnet
