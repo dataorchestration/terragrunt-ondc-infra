@@ -2,9 +2,10 @@ version: '2'
 
 services:
 
-  metabase:
-    image: metabase/metabase:v0.40.1
-    container_name: metabase
+  metabase-1:
+    image: metabase/metabase:v0.45.0
+    restart: always
+    container_name: metabase-1
     environment:
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: metabase
@@ -12,7 +13,84 @@ services:
       MB_DB_USER: metabase
       MB_DB_PASS: ${METABASE_DB_PASS}
       MB_DB_HOST: ${METABASE_DB_HOST}
+      JAVA_OPTS: -Xmx2g
     expose:
-      - 80
+      - 3000
     ports:
-      - 80:3000
+      - 3000:3000
+
+  metabase-2:
+    image: metabase/metabase:v0.45.0
+    restart: always
+    container_name: metabase-2
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${METABASE_DB_PASS}
+      MB_DB_HOST: ${METABASE_DB_HOST}
+      JAVA_OPTS: -Xmx2g
+    expose:
+      - 3001
+    ports:
+      - 3001:3001
+  metabase-3:
+    image: metabase/metabase:v0.45.0
+    restart: always
+    container_name: metabase-3
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${METABASE_DB_PASS}
+      MB_DB_HOST: ${METABASE_DB_HOST}
+      JAVA_OPTS: -Xmx2g
+    expose:
+      - 3002
+    ports:
+      - 3002:3002
+  metabase-4:
+    image: metabase/metabase:v0.45.0
+    restart: always
+    container_name: metabase-4
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${METABASE_DB_PASS}
+      MB_DB_HOST: ${METABASE_DB_HOST}
+      JAVA_OPTS: -Xmx2g
+    expose:
+      - 3003
+    ports:
+      - 3003:3003
+
+  nginx:
+    build:
+      context: .
+    restart: "always"
+    depends_on:
+      - metabase-1
+      - metabase-2
+      - metabase-3
+      - metabase-4
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+
+  certbot:
+    image: certbot/certbot
+    depends_on:
+      - nginx
+    restart: "always"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
