@@ -19,5 +19,12 @@ terraform {
 }
 
 inputs = {
-  availablity_zone = "ap-south-1a"
+  availablity_zone  = "ap-south-1a"
+  availablity_zoneb = "ap-south-1b"
+  availablity_zonec = "ap-south-1c"
+  tags              = {
+    "kubernetes.io/role/elb" : "1"
+    "kubernetes.io/cluster/ondc-prod-prod-eks-cluster" : "owned"
+  }
+
 }

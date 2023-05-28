@@ -54,7 +54,7 @@ remote_state {
 # ---------------------------------------------------------------------------------------------------------------------
 # GLOBAL PARAMETERS
 # These variables apply to all configurations in this subfolder. These are automatically merged into the child
-# `terragrunt.hcl` config via the include block.
+# `main.tf.off` config via the include block.
 # ---------------------------------------------------------------------------------------------------------------------
 
 # Configure root level variables that all resources can inherit. This is especially helpful with multi-account configs
