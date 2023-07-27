@@ -66,6 +66,9 @@ module "eks_cluster" {
   apply_config_map_aws_auth = var.apply_config_map_aws_auth
 
   context = module.this.context
+  kube_exec_auth_enabled = true
+  kube_exec_auth_aws_profile_enabled = true
+  kube_exec_auth_aws_profile = "ondc-prod"
 
 }
 
@@ -103,7 +106,7 @@ module "eks_node_group_redis" {
   name              = "redis"
   subnet_ids        = var.subnet_ids
   cluster_name      = module.eks_cluster.eks_cluster_id
-  instance_types    = ["r5.large"]
+  instance_types    = ["r5.2xlarge"]
   desired_size      = 2
   min_size          = 2
   max_size          = 2
@@ -132,9 +135,9 @@ module "eks_node_group_redis_spot" {
   subnet_ids                 = var.subnet_ids
   cluster_name               = module.eks_cluster.eks_cluster_id
   instance_types             = ["c5.4xlarge"]
-  desired_size               = 1
-  min_size                   = 1
-  max_size                   = 2
+  desired_size               = 3
+  min_size                   = 3
+  max_size                   = 3
   kubernetes_taints          = [{ key = "redis-worker", value = "true", effect = "NO_SCHEDULE" }]
   capacity_type              = "SPOT"
   cluster_autoscaler_enabled = true
