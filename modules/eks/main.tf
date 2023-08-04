@@ -65,10 +65,10 @@ module "eks_cluster" {
   # `terraform destroy` to succeed.
   apply_config_map_aws_auth = var.apply_config_map_aws_auth
 
-  context = module.this.context
-  kube_exec_auth_enabled = true
+  context                            = module.this.context
+  kube_exec_auth_enabled             = true
   kube_exec_auth_aws_profile_enabled = true
-  kube_exec_auth_aws_profile = "ondc-prod"
+  kube_exec_auth_aws_profile         = "ondc-prod"
 
 }
 
@@ -97,20 +97,30 @@ module "eks_node_group" {
   ]
   context                    = module.this.context
   cluster_autoscaler_enabled = true
+
 }
 
 # another node group with r5.large instance type and tainted with redis=true
 module "eks_node_group_redis" {
-  source            = "cloudposse/eks-node-group/aws"
-  version           = "2.4.0"
-  name              = "redis"
-  subnet_ids        = var.subnet_ids
-  cluster_name      = module.eks_cluster.eks_cluster_id
-  instance_types    = ["r5.2xlarge"]
-  desired_size      = 2
-  min_size          = 2
-  max_size          = 2
-  kubernetes_taints = [{ key = "redis", value = "true", effect = "NO_SCHEDULE" }]
+  source                = "cloudposse/eks-node-group/aws"
+  version               = "2.4.0"
+  name                  = "redis"
+  subnet_ids            = var.subnet_ids
+  cluster_name          = module.eks_cluster.eks_cluster_id
+  instance_types        = ["r5.large"]
+  desired_size          = 1
+  min_size              = 1
+  max_size              = 1
+  kubernetes_taints     = [{ key = "redis", value = "true", effect = "NO_SCHEDULE" }]
+  block_device_mappings = [
+    {
+      "delete_on_termination" : true,
+      "device_name" : "/dev/xvda",
+      "encrypted" : true,
+      "volume_size" : 100,
+      "volume_type" : "gp2"
+    }
+  ]
 
   # Prevent the node groups from being created before the Kubernetes aws-auth ConfigMap
   module_depends_on     = module.eks_cluster.kubernetes_config_map_id
@@ -125,6 +135,7 @@ module "eks_node_group_redis" {
   ]
   context                    = module.this.context
   cluster_autoscaler_enabled = true
+
 }
 
 # redis worker node group on spot instance on t3.2xlarge
