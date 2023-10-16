@@ -26,13 +26,13 @@ dependency "default_network" {
 
 
 inputs = {
-  region              = local.region_vars.locals.aws_region
-  availability_zones  = ["ap-south-1a"]
-  namespace           = local.environment_vars.locals.namespace
-  stage               = local.environment_vars.locals.stage
-  vpc_id              = dependency.default_network.outputs.default_vpc
-  subnets             = [dependency.default_network.outputs.default_subnet]
-  security_groups     = [
+  region             = local.region_vars.locals.aws_region
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  namespace          = local.environment_vars.locals.namespace
+  stage              = local.environment_vars.locals.stage
+  vpc_id             = dependency.default_network.outputs.default_vpc
+  subnets            = [dependency.default_network.outputs.default_subnet]
+  security_groups    = [
     dependency.default_network.outputs.aws_default_security_group
   ]
   engine              = "postgres"
@@ -50,7 +50,7 @@ inputs = {
   multi_az            = false
   db_parameter_group  = "postgres11"
   allocated_storage   = 100
-  storage_type = "gp2"
+  storage_type        = "gp2"
   db_parameter        = [
     {
       name         = "rds.logical_replication"
