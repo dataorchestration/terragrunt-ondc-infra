@@ -6,7 +6,7 @@ resource "aws_mskconnect_connector" "msk-connector" {
   capacity {
     autoscaling {
       # we dont need autoscaling in case of debezium, though we will keep it for any future connectors
-      mcu_count        = 1
+      mcu_count        = 2
       min_worker_count = 2
       max_worker_count = 4
 
@@ -15,7 +15,7 @@ resource "aws_mskconnect_connector" "msk-connector" {
       }
 
       scale_out_policy {
-        cpu_utilization_percentage = 80
+        cpu_utilization_percentage = 60
       }
     }
   }
