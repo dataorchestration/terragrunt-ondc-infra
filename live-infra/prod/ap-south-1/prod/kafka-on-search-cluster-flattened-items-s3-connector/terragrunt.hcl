@@ -29,25 +29,25 @@ inputs = {
   namespace                  = local.environment_vars.locals.namespace
   stage                      = local.environment_vars.locals.stage
   vpc_id                     = dependency.default_network.outputs.default_vpc
-  kafka_bootstrap_servers    = "b-2.ondcnhmkafkacluster.52semx.c2.kafka.ap-south-1.amazonaws.com:9092,b-1.ondcnhmkafkacluster.52semx.c2.kafka.ap-south-1.amazonaws.com:9092,b-3.ondcnhmkafkacluster.52semx.c2.kafka.ap-south-1.amazonaws.com:9092"
+  kafka_bootstrap_servers    = "b-3.kafkaonsearchcluster.u3k9qd.c2.kafka.ap-south-1.amazonaws.com:9092,b-2.kafkaonsearchcluster.u3k9qd.c2.kafka.ap-south-1.amazonaws.com:9092,b-4.kafkaonsearchcluster.u3k9qd.c2.kafka.ap-south-1.amazonaws.com:9092"
   vpc_default_security_group = dependency.default_network.outputs.aws_default_security_group
   subnets                    = [
     dependency.default_network.outputs.default_subnet, dependency.default_network.outputs.default_subnetb
   ]
 
-  connector_name       = "s3-on-search-p2p-items-connector"
-  cloudwatch_log_group = "s3-on-search-p2p-items-connector"
-  name = "s3-on-search-p2p-items"
+  connector_name       = "s3-on-search-cluster-items"
+  cloudwatch_log_group = "s3-on-search-cluster-items"
+  name = "s3-on-search-cluster-items"
 
   aws_mskconnect_custom_plugin_arn             = dependency.kafka-worker.outputs.aws_mskconnect_custom_plugin_arn
   aws_mskconnect_custom_plugin_latest_revision = 1
   map_of_connector_configuration               = tomap({
     "connector.class"             = "io.confluent.connect.s3.S3SinkConnector"
     "tasks.max"                   = "1"
-    "topics.regex"                = "p2p_on_search_flattened_items"
+    "topics.regex"                = "on_search_cluster_items_flattened"
     "s3.bucket.name"              = "ondc-rds-analytics-data-export"
     "s3.region"                   = "ap-south-1"
-    "s3.part.size"                = "15242880"
+    "s3.part.size"                = "10242880"
     "flush.size"                  = "1000000"
     "storage.class"               = "io.confluent.connect.s3.storage.S3Storage"
     "format.class"                = "io.confluent.connect.s3.format.bytearray.ByteArrayFormat"
