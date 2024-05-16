@@ -35,15 +35,15 @@ inputs = {
     dependency.default_network.outputs.default_subnet, dependency.default_network.outputs.default_subnetb
   ]
 
-  connector_name       = "s3-connector-staging"
-  cloudwatch_log_group = "s3-connector-staging"
+  connector_name       = "s3-connector-new-events-cluster"
+  cloudwatch_log_group = "s3-connector-new-events-cluster"
 
   aws_mskconnect_custom_plugin_arn             = dependency.kafka-worker.outputs.aws_mskconnect_custom_plugin_arn
   aws_mskconnect_custom_plugin_latest_revision = 1
   map_of_connector_configuration               = tomap({
     "connector.class"             = "io.confluent.connect.s3.S3SinkConnector"
     "tasks.max"                   = "1"
-    "topics.regex"                = "events_staging"
+    "topics.regex"                = "events"
     "s3.bucket.name"              = "ondc-rds-analytics-data-export"
     "s3.region"                   = "ap-south-1"
     "s3.part.size"                = "25242880"
