@@ -93,6 +93,10 @@ module "eks_node_group" {
     "arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess",
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
     aws_iam_policy.ecr.arn,
   ]
   context                    = module.this.context
@@ -100,7 +104,7 @@ module "eks_node_group" {
 
 }
 
-# another node group with r5.large instance type and tainted with redis=true
+ another node group with r5.large instance type and tainted with redis=true
 module "eks_node_group_redis" {
   source                = "cloudposse/eks-node-group/aws"
   version               = "2.4.0"
@@ -125,12 +129,16 @@ module "eks_node_group_redis" {
   # Prevent the node groups from being created before the Kubernetes aws-auth ConfigMap
   module_depends_on     = module.eks_cluster.kubernetes_config_map_id
   node_role_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess",
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
     aws_iam_policy.ecr.arn,
   ]
   context                    = module.this.context
@@ -162,6 +170,10 @@ module "eks_node_group_redis_spot" {
     "arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess",
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
     aws_iam_policy.ecr.arn,
   ]
   context = module.this.context
@@ -170,7 +182,7 @@ module "eks_node_group_redis_spot" {
 
 # and pass it to worker nodes
 resource "aws_iam_policy" "ecr" {
-  name        = "ecr"
+  name        = "ecr-${module.this.namespace}-${module.this.stage}"
   description = "Allow ECR access"
   policy      = file("${path.module}/ecr-policy.json")
 }
