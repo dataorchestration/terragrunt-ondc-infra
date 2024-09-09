@@ -155,3 +155,6 @@ variable "default_security_group_id" {
 }
 variable "vpc_cidr_block" {
 }
+variable "access_entry_map" {
+  default = {}
+}
