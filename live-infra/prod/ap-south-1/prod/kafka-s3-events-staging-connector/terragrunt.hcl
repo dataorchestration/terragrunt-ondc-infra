@@ -65,7 +65,6 @@ inputs = {
     "s3.compression.type"         = "gzip"
     "s3.compression.level"        = "9"
 
-
   })
 }
 

@@ -72,6 +72,7 @@ module "eks_cluster" {
 
 }
 
+
 module "eks_node_group" {
   source  = "cloudposse/eks-node-group/aws"
   version = "2.4.0"
@@ -104,18 +105,18 @@ module "eks_node_group" {
 
 }
 
- another node group with r5.large instance type and tainted with redis=true
+# another node group with r5.large instance type and tainted with redis=true
 module "eks_node_group_redis" {
   source                = "cloudposse/eks-node-group/aws"
   version               = "2.4.0"
-  name                  = "redis"
+  name                  = "${module.this.name}-redis"
   subnet_ids            = var.subnet_ids
   cluster_name          = module.eks_cluster.eks_cluster_id
-  instance_types        = ["r5.large"]
+  instance_types        = ["r5.xlarge"]
   desired_size          = 1
   min_size              = 1
   max_size              = 1
-  kubernetes_taints     = [{ key = "redis", value = "true", effect = "NO_SCHEDULE" }]
+  kubernetes_taints     = [{ key = "es", value = "true", effect = "NO_SCHEDULE" }]
   block_device_mappings = [
     {
       "delete_on_termination" : true,
@@ -125,41 +126,6 @@ module "eks_node_group_redis" {
       "volume_type" : "gp2"
     }
   ]
-
-  # Prevent the node groups from being created before the Kubernetes aws-auth ConfigMap
-  module_depends_on     = module.eks_cluster.kubernetes_config_map_id
-  node_role_policy_arns = [
-     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess",
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-    aws_iam_policy.ecr.arn,
-  ]
-  context                    = module.this.context
-  cluster_autoscaler_enabled = true
-
-}
-
-# redis worker node group on spot instance on t3.2xlarge
-module "eks_node_group_redis_spot" {
-  source                     = "cloudposse/eks-node-group/aws"
-  version                    = "2.4.0"
-  name                       = "redis-spot"
-  subnet_ids                 = var.subnet_ids
-  cluster_name               = module.eks_cluster.eks_cluster_id
-  instance_types             = ["c5.4xlarge"]
-  desired_size               = 3
-  min_size                   = 3
-  max_size                   = 3
-  kubernetes_taints          = [{ key = "redis-worker", value = "true", effect = "NO_SCHEDULE" }]
-  capacity_type              = "SPOT"
-  cluster_autoscaler_enabled = true
 
   # Prevent the node groups from being created before the Kubernetes aws-auth ConfigMap
   module_depends_on     = module.eks_cluster.kubernetes_config_map_id
@@ -174,10 +140,45 @@ module "eks_node_group_redis_spot" {
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
     "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-    aws_iam_policy.ecr.arn,
+    #    aws_iam_policy.ecr.arn,
   ]
-  context = module.this.context
+  context                    = module.this.context
+  cluster_autoscaler_enabled = true
+
 }
+#
+## redis worker node group on spot instance on t3.2xlarge
+#module "eks_node_group_redis_spot" {
+#  source                     = "cloudposse/eks-node-group/aws"
+#  version                    = "2.4.0"
+#  name                       = "${module.this.name}-redis-spot"
+#  subnet_ids                 = var.subnet_ids
+#  cluster_name               = module.eks_cluster.eks_cluster_id
+#  instance_types             = ["c5.4xlarge"]
+#  desired_size               = 3
+#  min_size                   = 3
+#  max_size                   = 3
+#  kubernetes_taints          = [{ key = "redis-worker", value = "true", effect = "NO_SCHEDULE" }]
+#  capacity_type              = "SPOT"
+#  cluster_autoscaler_enabled = true
+#
+#  # Prevent the node groups from being created before the Kubernetes aws-auth ConfigMap
+#  module_depends_on     = module.eks_cluster.kubernetes_config_map_id
+#  node_role_policy_arns = [
+#    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+#    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+#    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+#    "arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess",
+#    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+#    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+#    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+#    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+#    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+#    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+#    aws_iam_policy.ecr.arn,
+#  ]
+#  context = module.this.context
+#}
 
 
 # and pass it to worker nodes
