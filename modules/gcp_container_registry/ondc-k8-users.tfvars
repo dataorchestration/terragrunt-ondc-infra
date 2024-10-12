@@ -11,4 +11,5 @@ repo_names = [
   "ondc-ref-app-catalog-transformer",
   "ondc-ref-app-catalog-es-dumper",
   "ondc-ref-app-catalog-translator",
+  "ondc-ref-app-oms",
 ]
