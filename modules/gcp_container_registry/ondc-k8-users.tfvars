@@ -1,5 +1,7 @@
-members = ["user:navdeep@dataorc.in", "user:aditya@dataorc.in", "user:akshay@wemotiveforge.com", "user:shalaka@dataorc.in"]
-project  = "ondc-ref-buyer-app"
+members = [
+  "user:navdeep@dataorc.in", "user:aditya@dataorc.in", "user:akshay@wemotiveforge.com", "user:shalaka@dataorc.in"
+]
+project = "ondc-ref-buyer-app"
 location = "asia-south1"
 repo_names = [
   "ondc-ref-app-frontend-service",
@@ -12,4 +14,6 @@ repo_names = [
   "ondc-ref-app-catalog-es-dumper",
   "ondc-ref-app-catalog-translator",
   "ondc-ref-app-oms",
+  "ondc-ref-app-oms-frontend-service",
+
 ]
