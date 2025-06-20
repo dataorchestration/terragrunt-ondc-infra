@@ -15,5 +15,8 @@ repo_names = [
   "ondc-ref-app-catalog-translator",
   "ondc-ref-app-oms",
   "ondc-ref-app-oms-frontend-service",
+  "monitoring-crons",
+  "ondc-ref-app-catalog-disovery",
+  "ondc-ref-app-categorization-service",
 
 ]
