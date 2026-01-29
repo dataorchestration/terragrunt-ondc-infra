@@ -1,0 +1,49 @@
+version: "3.3"
+
+services:
+  sonarqube:
+    image: sonarqube:10.0.0-community
+    hostname: sonarqube
+    container_name: local-sonarqube
+    depends_on:
+      - db
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      # The following (commented out) setting is a workaround for the following error:
+      #
+      # max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+      #
+      # It is better to add the following to the file `%USERPROFILE%\.wslconfig` on Windows instead:
+      #
+      # [wsl2]
+      # kernelCommandLine="sysctl.vm.max_map_count=262144"
+      #- SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    ports:
+      - "9000:9000"
+    sysctls:
+      - vm.max_map_count=262144
+
+  db:
+    image: postgres:15.3
+    hostname: postgres
+    container_name: local-postgres-for-sonarqube
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  postgresql:
+  postgresql_data:
