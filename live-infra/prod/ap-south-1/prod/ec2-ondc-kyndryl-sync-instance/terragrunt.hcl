@@ -72,6 +72,65 @@ generate "kyndryl_sync_iam" {
         ]
       })
     }
+
+    resource "aws_iam_role_policy" "kyndryl_sync_cloudwatch" {
+      name = "KyndrylGatewaySyncCloudWatch"
+      role = "ondc-gcs-audit-pull"
+
+      policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Sid      = "PublishKyndrylSyncMetrics"
+            Effect   = "Allow"
+            Action   = "cloudwatch:PutMetricData"
+            Resource = "*"
+            Condition = {
+              StringEquals = {
+                "cloudwatch:namespace" = "ONDC/KyndrylGatewaySync"
+              }
+            }
+          }
+        ]
+      })
+    }
+
+    resource "aws_cloudwatch_metric_alarm" "kyndryl_sync_failed" {
+      alarm_name          = "Kyndryl Gateway Sync - Run Failed"
+      alarm_description   = "A scheduled Kyndryl GCS-to-S3 sync attempt failed."
+      namespace           = "ONDC/KyndrylGatewaySync"
+      metric_name         = "SyncRunFailure"
+      statistic           = "Sum"
+      period              = 300
+      evaluation_periods  = 1
+      threshold           = 1
+      comparison_operator = "GreaterThanOrEqualToThreshold"
+      treat_missing_data  = "notBreaching"
+      alarm_actions       = ["arn:aws:sns:ap-south-1:568130295144:Default_CloudWatch_Alarms_Topic"]
+
+      dimensions = {
+        JobName = "kyndryl-gateway-sync"
+      }
+    }
+
+    resource "aws_cloudwatch_metric_alarm" "kyndryl_sync_stale" {
+      alarm_name          = "Kyndryl Gateway Sync - Missing or Stale Success"
+      alarm_description   = "No healthy Kyndryl gateway sync heartbeat was received, or the latest successful run is more than 30 hours old."
+      namespace           = "ONDC/KyndrylGatewaySync"
+      metric_name         = "SyncHealthy"
+      statistic           = "Minimum"
+      period              = 3600
+      evaluation_periods  = 2
+      datapoints_to_alarm = 2
+      threshold           = 1
+      comparison_operator = "LessThanThreshold"
+      treat_missing_data  = "breaching"
+      alarm_actions       = ["arn:aws:sns:ap-south-1:568130295144:Default_CloudWatch_Alarms_Topic"]
+
+      dimensions = {
+        JobName = "kyndryl-gateway-sync"
+      }
+    }
   EOF
 }
 
